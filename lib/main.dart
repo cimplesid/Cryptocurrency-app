@@ -1,85 +1,56 @@
 import 'package:flutter/material.dart';
-// import './home.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'home.dart';
+import 'dart:async';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'http req',
-      
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-       
         
-        primarySwatch: Colors.blue,
-      ),
-      home: HomePage()
-    );
+        title: 'cryptocurrency',
+        debugShowCheckedModeBanner: false,
+        theme: new ThemeData(
+            primaryColor: Color.fromRGBO(58, 66, 86, 1.0),
+            textTheme: TextTheme(title: TextStyle(color: Colors.white))),
+        home: SplashScreen());
   }
 }
-
-class HomePage extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   @override
-  Future<List> getCurrencies()async{
-    http.Response res =await http.Client().get('https://api.coinlore.com/api/tickers/');
-    return json.decode(res.body)['data'];
+  _SplashScreenState createState() => new _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  startTime() async {
+    var _duration = new Duration(seconds: 2);
+    return new Timer(_duration, navigationPage);
   }
+
+  void navigationPage() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => HomePage()));
+    //  Navigator.of(context).pushReplacementNamed('_');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    startTime();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.green,
-        title: Text('Crypto currency'),
-        actions: <Widget>[
+    return new Scaffold(
+      backgroundColor:Color.fromRGBO(58, 66, 86, 1.0),
+      body: new Center(
+        child: Icon(
+          Icons.local_atm,
+          size: 200.0,
+          color: Colors.white70,
+        ),
         
-          // IconButton(
-          //   icon: Icon(Icons.arrow_downward),
-          //   onPressed: (){print('pressed');},
-          // )
-        ],
-
-      ),
-    body: Container(
-      color: Colors.green,
-      child: FutureBuilder(
-        future: getCurrencies(),
-        builder: (BuildContext context,AsyncSnapshot snapshot){
-          if(!snapshot.hasData) return Center(child: CircularProgressIndicator(),);
-          if(snapshot.hasError) return Center(child: Text("error"),);
-          List data =snapshot.data;
-          return ListView.builder(
-            itemCount:  data.length,
-            itemBuilder: (BuildContext context,int index){
-              Coin coin =Coin.fromMap(data[index]);
-              return ListTile(
-                title: Text(coin.name),
-                trailing: Text("\$${coin.priceUSD}"),
-                subtitle: Text(coin.symbol),
-              );
-            },
-          );
-        },
-      ),
-    ),
-      
-    );
-  }
-}
-
-class Coin {
-  String id;
-  String name;
-  String symbol;
-  String priceUSD;
-  
-  Coin.fromMap(Map data):
-  id=data['id'],
-  name=data['name'],
-  symbol=data['symbol'],
-  priceUSD=data['price_usd'];
-
-}
+        ),
+      );
+    }}
